@@ -1,7 +1,7 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-#include "GameScene.h"
-
+#include "SelectScene.h"
+#include "BMSParser.h"
 USING_NS_CC;
 
 AppDelegate::AppDelegate() {
@@ -17,7 +17,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLView::create("Project R");
+        glview = GLView::create("DJ ZZABS");
         director->setOpenGLView(glview);
     }
 
@@ -27,8 +27,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
 
+	/// 파일가져오기
+	auto pBmsParser = new CBMSParser();
+
     // create a scene. it's an autorelease object
-    auto scene = GameScene::createScene();
+    auto scene = SelectScene::createScene();
 
     // run
     director->runWithScene(scene);

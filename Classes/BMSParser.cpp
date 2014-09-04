@@ -105,6 +105,22 @@ bool CBMSParser::loadBMSFile(std::string strFileName, bool bHeaderOnly/* = false
 	if (pBuffer)
 	{
 		//log("pBuffer size : %d", bufferSize);
+		//bms 파일이 있는 폴더까지의 경로를 찾기
+		std::string strChar;
+		size_t nPos = strFileName.find(".bms");
+		while (nPos < std::string::npos)
+		{
+			strChar = strFileName.at(nPos);
+			if (strChar.compare("/") == 0)	//존재 하면 true, 하지 않으면 false
+			{
+				log("Root string end : %d", nPos);
+				std::string strDirPath = strFileName.substr(0, nPos + 1);		// /까지 포함
+				setDirectoryPath(strDirPath);
+				break;
+			}
+
+			nPos--;
+		}
 
 		//BMS파싱한 데이터를 실제 게임 데이터로 변환
 		parseBMSData(pBuffer, bufferSize);

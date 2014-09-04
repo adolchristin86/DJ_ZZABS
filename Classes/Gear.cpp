@@ -31,7 +31,7 @@ CGearUI::CGearUI()
 	m_dTotalFrame = 0.0f;
 	m_nTotalSec = 0;
 	m_nTotalScore = 0;
-	m_bIsAutoPlay = true;
+	m_bIsAutoPlay = false;
 }
 
 CGearUI::~CGearUI()
@@ -62,7 +62,8 @@ bool CGearUI::init()
 	log("|-Director::getInstance()->getVisibleOrigin() : %f , %f", origin.x, origin.y);
 	log("+--------------------------------------------------------");
 
-	std::string strRootPath = "BMS/";
+	std::string strRootPath = CBMSParser::getInstancePtr()->getDirectoryPath();
+	if (strRootPath.length() <= 0) return false;
 
 	//제목
 	auto pTitleLabel = LabelTTF::create(CBMSParser::getInstancePtr()->getTitle(), "Arial", 24);

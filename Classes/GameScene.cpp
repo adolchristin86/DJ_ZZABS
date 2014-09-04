@@ -5,10 +5,6 @@
 #include "BMSParser.h"
 #include "ScoreManager.h"
 
-//#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxHelper.h"
-//#endif
-
 USING_NS_CC;
 using namespace CocosDenshion;
 
@@ -58,27 +54,61 @@ bool GameScene::init()
 		origin.y + visibleSize.height - closeItem->getContentSize().height / 2));
 	menu->addChild(pMenuItem, UI_DEPTH_TOP);
 
-	/// 파일가져오기
-	auto pBmsParser = new CBMSParser();
-
-	//TODO:TEST bms로드 (PacificRim/PrivateParty)
-	if (CBMSParser::getInstancePtr()->loadBMSFile("BMS/PrivateParty.bms"))
-	{
-		CBMSParser::getInstancePtr()->setNoteTime();
-	}
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	std::string strFullPath;
 	std::list<std::string> listStr;
 	listStr.clear();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	
 	getBMSFileFullPathJNI(listStr);
+
+	auto it = listStr.begin();
+	auto stop = listStr.end();
+
+	for (; it != stop; it++)
+	{
+		std::string strData = *it;
+		log("!====== BMS List : %s", strData.c_str());
+
+		//TODO: 테스트 코드
+		if (strData.find("bms.bms") != std::string::npos)
+		{
+			strFullPath = strData;
+		}
+	}
+#else
+	//TODO: 일단 급한데로 경로만
+	std::string bmsPath = CCFileUtils::sharedFileUtils()->getWritablePath() + "BMS/Private Party/bms.bms";
+	listStr.push_back(bmsPath);
+	strFullPath = bmsPath;
+
+	bmsPath.clear();
+	bmsPath = CCFileUtils::sharedFileUtils()->getWritablePath() + "BMS/robin/robin.bms";
+	listStr.push_back(bmsPath);
+	//strFullPath = bmsPath;
+
+	bmsPath.clear();
+	bmsPath = CCFileUtils::sharedFileUtils()->getWritablePath() + "BMS/Sweet Rain/ad.bms";
+	listStr.push_back(bmsPath);
+	
 #endif
+	
+	log("!====== loadBMSFile : %s", strFullPath.c_str());
+	
+	//TODO:TEST bms로드 (PacificRim/PrivateParty)
+	if (CBMSParser::getInstancePtr()->loadBMSFile(strFullPath))
+	{
+		log("!====== Set My Bms File!!");
+		CBMSParser::getInstancePtr()->setNoteTime();
 
-	/// 기어
-	auto pGearLayer = CGearUI::create();
-	this->addChild(pGearLayer, UI_DEPTH_MIDDLE, kTagGear);
+		/// 기어
+		auto pGearLayer = CGearUI::create();
+		this->addChild(pGearLayer, UI_DEPTH_MIDDLE, kTagGear);
 
-	//스코어 매니저
-	auto pScoreMgr = new CScoreManager();
+		//스코어 매니저
+		auto pScoreMgr = new CScoreManager();
+	}
+
+	log("!====== Load Fail Bms File...");
 
 	/// 키패드
 	/*auto pKeypadLayer = CKeypadLayer::create(pGearLayer);

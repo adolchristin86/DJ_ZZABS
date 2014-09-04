@@ -171,12 +171,12 @@ bool CKeypadLayer::init(CKeyboardEventDelegate* pDelegate/* = NULL*/)
 	
 	//좌/우 키패드 버튼
 	Vec2 aKeypadPoint[kTagKeypadButtonMax] = {
-		Vec2(origin.x + 60,							origin.y + visibleSize.height / 3 - 40),
-		Vec2(origin.x + 110,						origin.y + visibleSize.height / 3 + 40),
-		Vec2(origin.x + 160,						origin.y + visibleSize.height / 3 - 40),
-		Vec2(origin.x + visibleSize.width - 160,		origin.y + visibleSize.height / 3 - 40),
-		Vec2(origin.x + visibleSize.width - 110,		origin.y + visibleSize.height / 3 + 40),
-		Vec2(origin.x + visibleSize.width - 60,		origin.y + visibleSize.height / 3 - 40) };
+		Vec2(origin.x + 60,							origin.y + visibleSize.height / 2 - 40),
+		Vec2(origin.x + 110,						origin.y + visibleSize.height / 2 + 40),
+		Vec2(origin.x + 160,						origin.y + visibleSize.height / 2 - 40),
+		Vec2(origin.x + visibleSize.width - 160,		origin.y + visibleSize.height / 2 - 40),
+		Vec2(origin.x + visibleSize.width - 110,		origin.y + visibleSize.height / 2 + 40),
+		Vec2(origin.x + visibleSize.width - 60,		origin.y + visibleSize.height / 2 - 40) };
 
 	for (int i = 0; i < kTagKeypadButtonMax; i++)
 	{

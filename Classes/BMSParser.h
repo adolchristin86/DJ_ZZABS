@@ -53,6 +53,8 @@ public:
 	
 	inline double getTotalTime() { return m_lTotalTime; }
 
+	inline std::string getDirectoryPath() { return m_strDirectoryPath; }
+
 	inline std::list<BMSNoteData*>* getBmsDataListPtr() { return &listBmsData; }
 	inline std::list<BMSNoteData*>* getBgmDataListPtr() { return &listBgmData; }
 private:
@@ -81,6 +83,8 @@ private:
 	int m_nTotal;
 
 	int m_nLNType;
+
+	std::string m_strDirectoryPath;
 
 	std::string m_strStageFileName;
 	
@@ -139,6 +143,8 @@ private:
 	inline void setHeaderOnly(bool bVal) { m_bHeaderOnly = bVal; }
 
 	inline void setTotalTime(long lVal) { m_lTotalTime = lVal; }
+
+	inline void setDirectoryPath(std::string strPath) { m_strDirectoryPath = strPath; }
 };
 
 #endif // __BMS_PARSER_H__
