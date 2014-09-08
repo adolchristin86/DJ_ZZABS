@@ -105,16 +105,20 @@ bool CGearUI::init()
 	pScoreBMFont->setScale(fFontScale);
 	this->addChild(pScoreBMFont, UI_DEPTH_TOP, kTagInfoScore);
 
-	std::string strStageImage = strRootPath + CBMSParser::getInstancePtr()->getStageFileName();
-	auto pStageSprite = Sprite::create(strStageImage);
-	pStageSprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	if (CBMSParser::getInstancePtr()->getStageFileName().size() > 0)
+	{
+		std::string strStageImage = strRootPath + CBMSParser::getInstancePtr()->getStageFileName();
+		auto pStageSprite = Sprite::create(strStageImage);
+		pStageSprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
-	// 화면 전체 사이즈에 맞게 조절
-	auto originalSize = pStageSprite->getContentSize();
-	pStageSprite->setScaleX(visibleSize.width / originalSize.width);
-	pStageSprite->setScaleY(visibleSize.height / originalSize.height);
-	pStageSprite->setOpacity(255 * 0.4);		//40%의 투명도
-	this->addChild(pStageSprite, UI_DEPTH_BOTTOM, kTagGameBackground);
+		// 화면 전체 사이즈에 맞게 조절
+		auto originalSize = pStageSprite->getContentSize();
+		pStageSprite->setScaleX(visibleSize.width / originalSize.width);
+		pStageSprite->setScaleY(visibleSize.height / originalSize.height);
+		pStageSprite->setOpacity(255 * 0.4);		//40%의 투명도
+		this->addChild(pStageSprite, UI_DEPTH_BOTTOM, kTagGameBackground);
+	}
+	
 
 	// 기어 배경
 	auto pGearBack = Sprite::create("Images/Gear_Frame.png");
@@ -232,6 +236,8 @@ bool CGearUI::init()
 
 		bool bIsBlue = nKeyIndex == 1 || nKeyIndex == 4;
 
+		if (nKeyIndex > 5) continue;
+
 		auto pNoteSprite = Sprite::create(bIsBlue ? strBlueNotePath : strWhiteNotePath);
 		pNoteSprite->setAnchorPoint(Vec2::ANCHOR_MIDDLE_BOTTOM);
 		pNoteSprite->setPosition(Vec2(fPosX, visibleSize.height + origin.y));
@@ -268,6 +274,8 @@ bool CGearUI::init()
 	auto menu = Menu::create(pMenuItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, UI_DEPTH_TOP, kTagSpeedBtn);
+
+	setIsAutoPlay(true);
 
 	return true;
 }

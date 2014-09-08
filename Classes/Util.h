@@ -63,7 +63,11 @@ void Split(const std::string& target, const std::string& delim, std::vector<std:
 		if (i == nCount - 1)
 		{
 			//n등분 완료
-			ret = target.substr(nIndex, std::string::npos);
+			if (nIndex > 0)
+			{
+				ret = target.substr(nIndex, std::string::npos);
+			}
+			
 		}
 		else
 		{

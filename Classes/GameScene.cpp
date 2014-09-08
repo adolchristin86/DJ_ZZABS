@@ -54,47 +54,12 @@ bool GameScene::init()
 		origin.y + visibleSize.height - closeItem->getContentSize().height / 2));
 	menu->addChild(pMenuItem, UI_DEPTH_TOP);
 
-	std::string strFullPath;
-	std::list<std::string> listStr;
-	listStr.clear();
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-	
-	getBMSFileFullPathJNI(listStr);
-
-	auto it = listStr.begin();
-	auto stop = listStr.end();
-
-	for (; it != stop; it++)
-	{
-		std::string strData = *it;
-		log("!====== BMS List : %s", strData.c_str());
-
-		//TODO: 테스트 코드
-		if (strData.find("bms.bms") != std::string::npos)
-		{
-			strFullPath = strData;
-		}
-	}
-#else
-	//TODO: 일단 급한데로 경로만
-	std::string bmsPath = CCFileUtils::sharedFileUtils()->getWritablePath() + "BMS/Private Party/bms.bms";
-	listStr.push_back(bmsPath);
-	strFullPath = bmsPath;
-
-	bmsPath.clear();
-	bmsPath = CCFileUtils::sharedFileUtils()->getWritablePath() + "BMS/robin/robin.bms";
-	listStr.push_back(bmsPath);
-	//strFullPath = bmsPath;
-
-	bmsPath.clear();
-	bmsPath = CCFileUtils::sharedFileUtils()->getWritablePath() + "BMS/Sweet Rain/ad.bms";
-	listStr.push_back(bmsPath);
-	
-#endif
+	int nBmsIndex = CBMSParser::getInstancePtr()->getBmsIndex();
+	std::string strFullPath = CBMSParser::getInstancePtr()->getFullPathAtIndex(nBmsIndex);
 	
 	log("!====== loadBMSFile : %s", strFullPath.c_str());
 	
-	//TODO:TEST bms로드 (PacificRim/PrivateParty)
+	//bms로드
 	if (CBMSParser::getInstancePtr()->loadBMSFile(strFullPath))
 	{
 		log("!====== Set My Bms File!!");
@@ -107,14 +72,6 @@ bool GameScene::init()
 		//스코어 매니저
 		auto pScoreMgr = new CScoreManager();
 	}
-
-	log("!====== Load Fail Bms File...");
-
-	/// 키패드
-	/*auto pKeypadLayer = CKeypadLayer::create(pGearLayer);
-	pKeypadLayer->setDelegate(pGearLayer);
-	this->addChild(pKeypadLayer, UI_DEPTH_TOP, kTagKeyPad);*/
-	
 	return true;
 }
 

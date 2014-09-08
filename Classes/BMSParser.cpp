@@ -16,6 +16,8 @@ CBMSParser::CBMSParser()
 {
 	m_eParserMode = EM_PARSER_MODE_NONE;
 	m_bHeaderOnly = false;
+
+	m_vecFullPath.clear();
 }
 
 CBMSParser::~CBMSParser()
@@ -50,6 +52,8 @@ void CBMSParser::init()
 	
 	m_nTotalNote = 0;
 	m_lTotalTime = 0;
+
+	m_nBmsIndex = 0;
 }
 
 void CBMSParser::clearListData()
@@ -116,6 +120,8 @@ bool CBMSParser::loadBMSFile(std::string strFileName, bool bHeaderOnly/* = false
 				log("Root string end : %d", nPos);
 				std::string strDirPath = strFileName.substr(0, nPos + 1);		// /까지 포함
 				setDirectoryPath(strDirPath);
+
+				m_vecFullPath.push_back(strFileName);
 				break;
 			}
 
@@ -145,6 +151,9 @@ bool CBMSParser::getBMSHeader(BMSHeaderData& pHeaderData)
 
 		pHeaderData.playlevel = getPlayLevel();
 		pHeaderData.rank = getRank();
+
+		pHeaderData.path = getDirectoryPath();
+		pHeaderData.stagefile = getStageFileName();
 	}
 
 	return bExistHeaderData;
@@ -257,7 +266,7 @@ void CBMSParser::parseBMSLineData(std::string& strLineData)
 			else if (vecSplitStr.at(0).compare("#STAGEFILE") == 0)
 			{
 				setStageFileName(vecSplitStr.at(1));
-				log("+= #STAGEFILE : %s", getArtist().c_str());
+				log("+= #STAGEFILE : %s", getStageFileName().c_str());
 			}
 			else if (vecSplitStr.at(0).compare("#DIFFICULTY") == 0)
 			{
@@ -282,41 +291,46 @@ void CBMSParser::parseBMSLineData(std::string& strLineData)
 			{
 				//미지원
 			}
-			else if (vecSplitStr.at(0).find("#BMP") != std::string::npos)
+			
+			if (getHeaderOnly() == false)
 			{
-				//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
-				int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
-				m_aBga[nIndex] = vecSplitStr.at(1);
-				log("+= #BMP%02d : %s", nIndex, m_aBga[nIndex].c_str());
-			}
-			else if (vecSplitStr.at(0).find("#WAV") != std::string::npos)
-			{
-				//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
-				int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
-				std::string strFileName = vecSplitStr.at(1);
+				if (vecSplitStr.at(0).find("#BMP") != std::string::npos)
+				{
+					//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
+					int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
+					m_aBga[nIndex] = vecSplitStr.at(1);
+					log("+= #BMP%02d : %s", nIndex, m_aBga[nIndex].c_str());
+				}
+				else if (vecSplitStr.at(0).find("#WAV") != std::string::npos)
+				{
+					//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
+					int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
+					std::string strFileName = vecSplitStr.at(1);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-				ReplaceString(strFileName, "mp3", "wav");	
+					ReplaceString(strFileName, "mp3", "wav");
 #endif
-				m_aWav[nIndex] = strFileName;
-				log("+= #WAV%02d : %s", nIndex, m_aWav[nIndex].c_str());
+					m_aWav[nIndex] = strFileName;
+					log("+= #WAV%02d : %s", nIndex, m_aWav[nIndex].c_str());
+				}
+				else if (vecSplitStr.at(0).find("#BPM") != std::string::npos)
+				{
+					//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
+					int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
+					//m_aBpm[nIndex] = std::stod(vecSplitStr.at(1));
+					m_aBpm[nIndex] = atof(vecSplitStr.at(1).c_str());
+					log("+= #BPM%02d : %lf", nIndex, m_aBpm[nIndex]);
+				}
+				else if (vecSplitStr.at(0).find("#STOP") != std::string::npos)
+				{
+					//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
+					int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
+					//m_aStop[nIndex] = std::stod(vecSplitStr.at(1));
+					m_aStop[nIndex] = atof(vecSplitStr.at(1).c_str());
+					log("+= #STOP%02d : %lf", nIndex, m_aStop[nIndex]);
+				}
 			}
-			else if (vecSplitStr.at(0).find("#BPM") != std::string::npos)
-			{
-				//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
-				int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
-				//m_aBpm[nIndex] = std::stod(vecSplitStr.at(1));
-				m_aBpm[nIndex] = atof(vecSplitStr.at(1).c_str());
-				log("+= #BPM%02d : %lf", nIndex, m_aBpm[nIndex]);
-			}
-			else if (vecSplitStr.at(0).find("#STOP") != std::string::npos)
-			{
-				//int nIndex = std::stoi(vecSplitStr.at(0).substr(4, 2));
-				int nIndex = atoi(vecSplitStr.at(0).substr(4, 2).c_str());
-				//m_aStop[nIndex] = std::stod(vecSplitStr.at(1));
-				m_aStop[nIndex] = atof(vecSplitStr.at(1).c_str());
-				log("+= #STOP%02d : %lf", nIndex, m_aStop[nIndex]);
-			}
+			
 		}
 	}
 
@@ -443,7 +457,11 @@ void CBMSParser::parseBMSLineData(std::string& strLineData)
 			}
 		}
 
-		log("+= #%03d%02d : %s", nMadi, nChannel, vecSplitStr.at(1).c_str());
+		if (getHeaderOnly() == false) 
+		{
+			log("+= #%03d%02d : %s", nMadi, nChannel, vecSplitStr.at(1).c_str());
+		}
+		
 	}
 }
 

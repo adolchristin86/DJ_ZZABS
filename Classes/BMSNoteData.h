@@ -29,6 +29,8 @@ public:
 	std::string title;
 	std::string artist;
 
+	std::string path;
+
 	float bpm;
 
 	int playlevel;

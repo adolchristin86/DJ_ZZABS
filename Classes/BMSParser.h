@@ -43,6 +43,8 @@ public:
 
 	int getTotalMadiCount();
 
+	std::string getFullPathAtIndex(int nIndex) { return m_vecFullPath.at(nIndex); }
+
 	inline int getTotalNote() { return m_nTotalNote; }
 	
 	inline double getLengthBeat(int nIdx) { return m_aLenthBeat[nIdx]; } //채널2 마디 단축을 위한 배열 : 기본값 1.0f
@@ -54,9 +56,13 @@ public:
 	inline double getTotalTime() { return m_lTotalTime; }
 
 	inline std::string getDirectoryPath() { return m_strDirectoryPath; }
-
+	inline std::string getBmsFileName() { return m_strBmsFileName; }
+	
 	inline std::list<BMSNoteData*>* getBmsDataListPtr() { return &listBmsData; }
 	inline std::list<BMSNoteData*>* getBgmDataListPtr() { return &listBgmData; }
+
+	inline void setBmsIndex(int nVal) { m_nBmsIndex = nVal; }
+	inline int getBmsIndex() { return m_nBmsIndex; }
 private:
 
 	void init();
@@ -85,6 +91,7 @@ private:
 	int m_nLNType;
 
 	std::string m_strDirectoryPath;
+	std::string m_strBmsFileName;
 
 	std::string m_strStageFileName;
 	
@@ -108,6 +115,10 @@ private:
 	bool m_bHeaderOnly;
 
 	long m_lTotalTime;
+
+	int m_nBmsIndex;
+
+	std::vector<std::string> m_vecFullPath;
 
 	inline EnumParserMode getParserMode() { return m_eParserMode; }
 	inline void setParserMode(EnumParserMode eMode) { m_eParserMode = eMode; }
@@ -143,8 +154,8 @@ private:
 	inline void setHeaderOnly(bool bVal) { m_bHeaderOnly = bVal; }
 
 	inline void setTotalTime(long lVal) { m_lTotalTime = lVal; }
-
 	inline void setDirectoryPath(std::string strPath) { m_strDirectoryPath = strPath; }
+	
 };
 
 #endif // __BMS_PARSER_H__
